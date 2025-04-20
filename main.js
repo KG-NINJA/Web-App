@@ -1,8 +1,30 @@
 // なめらかボスコニアン風STG（最小構成）
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
-const W = canvas.width;
-const H = canvas.height;
+let W = canvas.width;
+let H = canvas.height;
+
+// 画面サイズに応じてcanvasをリサイズ
+function resizeGameCanvas() {
+  let ww = window.innerWidth;
+  let wh = window.innerHeight;
+  // 端末ごとに最大サイズを調整
+  if (ww < 700) { // スマホ
+    canvas.width = ww;
+    canvas.height = Math.min(wh * 0.7, ww * 0.75);
+  } else if (ww < 1100) { // タブレット
+    canvas.width = Math.floor(ww * 0.96);
+    canvas.height = Math.floor(wh * 0.75);
+  } else { // PC
+    canvas.width = 960;
+    canvas.height = 720;
+  }
+  W = canvas.width;
+  H = canvas.height;
+}
+window.addEventListener('resize', resizeGameCanvas);
+window.addEventListener('orientationchange', resizeGameCanvas);
+resizeGameCanvas();
 
 // マップ設定
 const MAP_W = 2000;
