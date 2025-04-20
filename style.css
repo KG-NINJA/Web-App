@@ -19,3 +19,46 @@ h1 {
   margin-top: 10px;
   font-size: 18px;
 }
+
+/* バーチャルパッド領域 */
+#touch-pad {
+  pointer-events: auto;
+  user-select: none;
+}
+#touch-pad #stick {
+  pointer-events: auto;
+  transition: background 0.2s;
+}
+/* ショットボタン */
+#touch-shot {
+  background: linear-gradient(135deg, #0af, #09f 60%, #fff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 12px #09f8;
+  font-weight: bold;
+  opacity: 0.85;
+  outline: none;
+  pointer-events: auto;
+  touch-action: none;
+  transition: background 0.2s, opacity 0.2s;
+}
+#touch-shot:active {
+  background: #fff;
+  color: #0af;
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  #touch-shot {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 17px !important;
+  }
+  #touch-pad #stick {
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 60px;
+    max-height: 60px;
+  }
+}

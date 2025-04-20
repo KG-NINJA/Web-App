@@ -12,7 +12,8 @@
   pad.style.height = '40vh';
   pad.style.zIndex = '10';
   pad.style.touchAction = 'none';
-  pad.innerHTML = '<div id="stick" style="position:absolute;left:40vw;bottom:20vh;width:80px;height:80px;border-radius:50%;background:rgba(0,128,255,0.2);border:2px solid #0af;transform:translate(-50%,-50%);"></div>';
+  // スティックもvw/vh基準で配置
+  pad.innerHTML = '<div id="stick" style="position:absolute;left:40%;bottom:20%;width:13vw;height:13vw;max-width:90px;max-height:90px;min-width:48px;min-height:48px;border-radius:50%;background:rgba(0,128,255,0.2);border:2px solid #0af;transform:translate(-50%,-50%);"></div>';
   document.body.appendChild(pad);
 
   // ショットボタン
@@ -21,37 +22,46 @@
   shotBtn.id = 'touch-shot';
   shotBtn.style.position = 'absolute';
   // GAME OVER時は画面中央やや上、普段は非表示
-  // ドラッグ移動用座標
-  let dragOffsetX = 0, dragOffsetY = 0, isDragging = false;
-  let shotBtnX = 555, shotBtnY = 506; // 初期座標を指定
-
+  // 端末種別ごとにショットボタンの配置を最適化
+  let shotBtnSize = 60; // px
+  let shotBtnOffsetX = 8, shotBtnOffsetY = 8; // デフォルト（右下）
+  // 画面サイズ・向き・端末種別で配置を決定
+  function getDeviceType() {
+    const ua = navigator.userAgent;
+    if (/Mobile|Android|iP(hone|od)/.test(ua)) return 'mobile';
+    if (/iPad|Tablet/.test(ua) || (navigator.maxTouchPoints && window.innerWidth > 700)) return 'tablet';
+    return 'pc';
+  }
   const updateShotBtnPos = () => {
-    shotBtn.style.left = shotBtnX + 'px';
-    shotBtn.style.top = shotBtnY + 'px';
+    const ww = window.innerWidth;
+    const wh = window.innerHeight;
+    const device = getDeviceType();
+    if (device === 'mobile') {
+      shotBtnSize = Math.max(wh, ww) < 700 ? 48 : 60;
+      shotBtnOffsetX = 4;
+      shotBtnOffsetY = 10;
+    } else if (device === 'tablet') {
+      shotBtnSize = 64;
+      shotBtnOffsetX = 18;
+      shotBtnOffsetY = 18;
+    } else {
+      shotBtnSize = 60;
+      shotBtnOffsetX = 8;
+      shotBtnOffsetY = 8;
+    }
+    // 配置
+    shotBtn.style.left = (ww - shotBtnSize - ww * shotBtnOffsetX / 100) + 'px';
+    shotBtn.style.top = (wh - shotBtnSize - wh * shotBtnOffsetY / 100) + 'px';
+    shotBtn.style.width = shotBtnSize + 'px';
+    shotBtn.style.height = shotBtnSize + 'px';
+    shotBtn.style.fontSize = (shotBtnSize * 0.35) + 'px';
   };
 
 
-  // ドラッグ操作
-  shotBtn.addEventListener('mousedown', function(e){
-    isDragging = true;
-    dragOffsetX = e.clientX - shotBtn.offsetLeft;
-    dragOffsetY = e.clientY - shotBtn.offsetTop;
-    document.body.style.userSelect = 'none';
-  });
-  window.addEventListener('mousemove', function(e){
-    if(isDragging) {
-      shotBtnX = e.clientX - dragOffsetX;
-      shotBtnY = e.clientY - dragOffsetY;
-      shotBtn.style.left = shotBtnX + 'px';
-      shotBtn.style.top = shotBtnY + 'px';
-    }
-  });
-  window.addEventListener('mouseup', function(e){
-    if(isDragging) {
-      isDragging = false;
-      document.body.style.userSelect = '';
-    }
-  });
+  // ドラッグによる移動を無効化（固定配置）
+  // shotBtn.addEventListener('mousedown', ...);
+  // window.addEventListener('mousemove', ...);
+  // window.addEventListener('mouseup', ...);
 
 
 
@@ -59,6 +69,7 @@
   window.addEventListener('resize', updateShotBtnPos);
   window.addEventListener('orientationchange', updateShotBtnPos);
   setTimeout(updateShotBtnPos, 100); // 初期配置
+  updateShotBtnPos();
   shotBtn.style.width = '80px';
   shotBtn.style.height = '80px';
   shotBtn.style.borderRadius = '50%';
