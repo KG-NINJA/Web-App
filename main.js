@@ -9,9 +9,15 @@ function resizeGameCanvas() {
   let ww = window.innerWidth;
   let wh = window.innerHeight;
   // 端末ごとに最大サイズを調整
-  if (ww < 700) { // スマホ
+  if (ww < 700) { // スマホ（iPhone SE対応）
     canvas.width = ww;
-    canvas.height = Math.min(wh * 0.7, ww * 0.75);
+    // 高さは端末のビューポート高さの95%までに制限
+    // 横長端末では高さを抑える
+    if (ww > wh) {
+      canvas.height = Math.floor(wh * 0.7);
+    } else {
+      canvas.height = Math.floor(wh * 0.95);
+    }
   } else if (ww < 1100) { // タブレット
     canvas.width = Math.floor(ww * 0.96);
     canvas.height = Math.floor(wh * 0.75);
